@@ -17,6 +17,7 @@ aws --profile kbasedev cloudformation create-stack --stack-name kendra-s3-source
 aws --profile kbasedev cloudformation validate-template --template-body file://roles.yml
 aws --profile kbasedev cloudformation create-stack --stack-name kendra-roles \
     --template-body file://roles.yml \
-    --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
+    --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" \
+    --parameters ParameterKey=S3DataSource,ParameterValue=${KENDRA_SOURCE_S3_BUCKET} # get from .env file
 # aws --profile kbasedev cloudformation delete-stack --stack-name kendra-roles
 ```

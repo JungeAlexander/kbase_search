@@ -1,13 +1,18 @@
 ---
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "Lambda DB API"
+Description: "Kendra roles"
+
+Parameters:
+  S3DataSource:
+    Type: "String"
+    Description: "S3 bucket serving as data source"
 
 Resources:
   KendraIndexingRole:
     Type: "AWS::IAM::Role"
     Properties:
       RoleName: KendraIndexing
-      KendraIndexingPolicyDocument:
+      AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
           - Effect: "Allow"
@@ -16,32 +21,63 @@ Resources:
                 - "kendra.amazonaws.com"
             Action:
               - "sts:AssumeRole"
-          - Effect: "Allow"
-            Resource: "*"
-            Action:
-              - "logs:DescribeLogGroups"
-          - Effect: "Allow"
-            Resource:
-              Fn::Join: [":", ["arn:aws:logs", !Ref "AWS::Region", !Ref "AWS::AccountId", "log-group:/aws/kendra/*"]]
-            Action:
-              - "logs:CreateLogGroup"
-          - Effect: "Allow"
-            Resource:
-              Fn::Join: [":", ["arn:aws:logs", !Ref "AWS::Region", !Ref "AWS::AccountId", "log-group:/aws/kendra/*:log-stream:*"]]
-            Action:
-              - "logs:DescribeLogStreams"
-              - "logs:CreateLogStream"
-              - "logs:PutLogEvents"
+      Policies:
+        - PolicyName: DescribeLogGroupsPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: "Allow"
+              Resource: "*"
+              Action:
+                - "logs:DescribeLogGroups"
+        - PolicyName: KendraCreateLogGroupsPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: "Allow"
+              Resource:
+                Fn::Join: [":", ["arn:aws:logs", !Ref "AWS::Region", !Ref "AWS::AccountId", "log-group:/aws/kendra/*"]]
+              Action:
+                - "logs:CreateLogGroup"
+        - PolicyName: KendraLogStreamPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: "Allow"
+              Resource:
+                Fn::Join: [":", ["arn:aws:logs", !Ref "AWS::Region", !Ref "AWS::AccountId", "log-group:/aws/kendra/*:log-stream:*"]]
+              Action:
+                - "logs:DescribeLogStreams"
+                - "logs:CreateLogStream"
+                - "logs:PutLogEvents"
+        - PolicyName: PutMetricsDataPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: "Allow"
+              Resource: "*"
+              Action: "cloudwatch:PutMetricData"
+              Condition:
+                StringEquals:
+                    cloudwatch:namespace: "Kendra"
+        - PolicyName: S3AccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Action:
+                - "s3:GetObject"
+                - "s3:GetObjectAcl"
+                - "s3:ListBucket"
+              Resource: !Sub "arn:aws:s3:::${S3DataSource}/*"
 
-#        {
-#            "Effect": "Allow",
-#            "Action": "cloudwatch:PutMetricData",
-#            "Resource": "*",
-#            "Condition": {
-#                "StringEquals": {
-#                    "cloudwatch:namespace": "Kendra"
-#                }
-#            }
-#        },
-
-# S3 access
+Outputs:
+  outputName:
+    Description: Role name
+    Value: !Ref KendraIndexingRole
+  outputArn:
+    Description: Role ARN
+    Value: !GetAtt KendraIndexingRole.Arn
+  outputId:
+    Description: Role ID
+    Value: !GetAtt KendraIndexingRole.RoleId
