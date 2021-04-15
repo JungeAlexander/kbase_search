@@ -40,12 +40,7 @@ Resources:
             Condition:
               StringNotEquals:
                 s3:x-amz-server-side-encryption: "AES256"
-          - Action: "s3:PutObject"
-            Effect: "Deny"
-            Principal: "*"
-            Resource: !Sub arn:aws:s3:::${MyBucketName}/*
-            Condition:
-              IsNull:
+              'Null':
                 s3:x-amz-server-side-encryption: true
 
 Outputs:
