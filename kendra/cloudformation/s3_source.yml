@@ -1,0 +1,56 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "S3 Bucket"
+
+Parameters:
+  MyBucketName:
+    Type: "String"
+    Description: "Bucket name to use"
+
+Resources:
+  KendraSourceBucket:
+    # http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub ${MyBucketName}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+    DeletionPolicy: Delete
+
+  BucketPolicyForKendraSourceBucket:
+    # http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-policy.html
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref KendraSourceBucket
+      PolicyDocument:
+        Statement:
+            # prevent uploads if server side encryption was not set
+            # https://aws.amazon.com/blogs/security/how-to-prevent-uploads-of-unencrypted-objects-to-amazon-s3/
+          - Action: "s3:PutObject"
+            Effect: "Deny"
+            Principal: "*"
+            Resource: !Sub arn:aws:s3:::${MyBucketName}/*
+            Condition:
+              StringNotEquals:
+                s3:x-amz-server-side-encryption: "AES256"
+          - Action: "s3:PutObject"
+            Effect: "Deny"
+            Principal: "*"
+            Resource: !Sub arn:aws:s3:::${MyBucketName}/*
+            Condition:
+              IsNull:
+                s3:x-amz-server-side-encryption: true
+
+Outputs:
+  KendraSourceBucketId:
+      Description : "Kendra Source Bucket ID"
+      Value:  !Ref KendraSourceBucket
+      Export:
+        Name: !Sub ${AWS::StackName}-KendraSourceBucket
