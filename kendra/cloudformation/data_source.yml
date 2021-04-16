@@ -1,0 +1,57 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Kendra index"
+
+Parameters:
+  KendraIndexStack:
+    Type: "String"
+    Description: "Stack creating Kendra index"
+  KendraDataSourceRoleStack:
+    Type: "String"
+    Description: "Stack creating Kendra data source role"
+
+Resources:
+  KendraS3DataSource:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kendra-datasource.html
+    Type: AWS::Kendra::DataSource
+    Properties:
+      DataSourceConfiguration:
+        S3Configuration:
+          AccessControlListConfiguration:
+            AccessControlListConfiguration
+          BucketName: String
+          DocumentsMetadataConfiguration:
+            DocumentsMetadataConfiguration
+          ExclusionPatterns:
+            DataSourceInclusionsExclusionsStrings
+          InclusionPatterns:
+            DataSourceInclusionsExclusionsStrings
+          InclusionPrefixes:
+            DataSourceInclusionsExclusionsStrings
+      Description: "S3 data source for PoC Kendra index"
+      IndexId: !Sub ${KendraIndexStack}-KendraIndexARN
+      Name: "kendra-poc-s3-data-source"
+      RoleArn: !Sub ${KendraDataSourceRoleStack}-KendraS3DataSourceRoleArn
+      Type: S3
+      Tags:
+      - Key: Purpose
+        Value: kendra
+      - Key: Stage
+        Value: poc
+
+Outputs:
+  outputS3DataSourceName:
+    Description: KendraS3DataSource name
+    Value: !Ref KendraS3DataSource
+    Export:
+      Name: !Sub ${AWS::StackName}-KendraS3DataSourceName
+  outputS3DataSourceArn:
+    Description: KendraS3DataSource ARN
+    Value: !GetAtt KendraS3DataSource.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-KendraS3DataSourceARN
+  outputS3DataSourceId:
+    Description: KendraS3DataSource ID
+    Value: !GetAtt KendraS3DataSource.Id
+    Export:
+      Name: !Sub ${AWS::StackName}-KendraS3DataSourceId
