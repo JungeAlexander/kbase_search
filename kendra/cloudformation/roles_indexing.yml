@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "Kendra roles"
+Description: "Kendra indexing roles"
 
 Parameters:
   S3DataSource:
@@ -21,6 +21,11 @@ Resources:
                 - "kendra.amazonaws.com"
             Action:
               - "sts:AssumeRole"
+      Tags:
+      - Key: Purpose
+        Value: kendra
+      - Key: Stage
+        Value: poc
       Policies:
         - PolicyName: DescribeLogGroupsPolicy
           PolicyDocument:
@@ -67,17 +72,15 @@ Resources:
             - Effect: Allow
               Action:
                 - "s3:GetObject"
-                - "s3:GetObjectAcl"
-                - "s3:ListBucket"
               Resource: !Sub "arn:aws:s3:::${S3DataSource}/*"
 
 Outputs:
-  outputName:
-    Description: Role name
+  outputIndexingName:
+    Description: KendraIndexing role name
     Value: !Ref KendraIndexingRole
-  outputArn:
-    Description: Role ARN
+  outputIndexingArn:
+    Description: KendraIndexing role ARN
     Value: !GetAtt KendraIndexingRole.Arn
-  outputId:
-    Description: Role ID
+  outputIndexingId:
+    Description: KendraIndexing role ID
     Value: !GetAtt KendraIndexingRole.RoleId
