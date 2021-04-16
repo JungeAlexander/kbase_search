@@ -1,0 +1,60 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Kendra data source roles"
+
+Parameters:
+  S3DataSource:
+    Type: "String"
+    Description: "S3 bucket serving as data source"
+  KendraIndexStack:
+    Type: "String"
+    Description: "Stack creating Kendra index"
+
+Resources:
+  KendraS3DataSourceRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: KendraS3DataSource
+      Tags:
+      - Key: Purpose
+        Value: kendra
+      - Key: Stage
+        Value: poc
+      Policies:
+        - PolicyName: S3AccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Action:
+                - "s3:GetObject"
+              Resource: !Sub "arn:aws:s3:::${S3DataSource}/*"
+        - PolicyName: S3ListBucketPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Action:
+                - "s3:ListBucket"
+              Resource: !Sub "arn:aws:s3:::${S3DataSource}"
+        - PolicyName: KendraBatchOperationPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Action:
+                - "kendra:BatchPutDocument"
+                - "kendra:BatchDeleteDocument"
+              Resource:
+                Fn::Join: [":", ["arn:aws:kendra", !Ref "AWS::Region", !Ref "AWS::AccountId", !Sub "index/${KendraIndexStack}-IndexId"]]
+
+Outputs:
+  outputS3DataSourceName:
+    Description: KendraS3DataSource role name
+    Value: !Ref KendraS3DataSource
+  outputS3DataSourceArn:
+    Description: KendraS3DataSource role ARN
+    Value: !GetAtt KendraS3DataSource.Arn
+  outputS3DataSourceId:
+    Description: KendraS3DataSource role ID
+    Value: !GetAtt KendraS3DataSource.RoleId
