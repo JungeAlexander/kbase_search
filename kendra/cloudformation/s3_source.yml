@@ -22,13 +22,12 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
-      DeletionPolicy: Delete
       Tags:
         - Key: Purpose
           Value: kendra
         - Key: Stage
           Value: poc
-
+    DeletionPolicy: Delete
 
   BucketPolicyForKendraSourceBucket:
     # http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-policy.html
