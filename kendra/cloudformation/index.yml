@@ -1,0 +1,40 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Kendra index"
+
+Parameters:
+  KendraIndexRoleStack:
+    Type: "String"
+    Description: "Stack creating Kendra indexing role"
+
+Resources:
+  KendraIndex:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kendra-index.html
+    Type: AWS::Kendra::Index
+    Properties:
+      Description: "PoC Kendra index"
+      Edition: "DEVELOPER_EDITION"
+      Name: "kendra-poc"
+      RoleArn: !Sub ${KendraIndexRoleStack}-KendraIndexingRoleARN
+      Tags:
+      - Key: Purpose
+        Value: kendra
+      - Key: Stage
+        Value: poc
+
+Outputs:
+  outputIndexName:
+    Description: KendraIndex name
+    Value: !Ref KendraIndex
+    Export:
+      Name: !Sub ${AWS::StackName}-KendraIndexName
+  outputIndexArn:
+    Description: KendraIndex ARN
+    Value: !GetAtt KendraIndex.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-KendraIndexARN
+  outputIndexId:
+    Description: KendraIndex ID
+    Value: !GetAtt KendraIndex.Id
+    Export:
+      Name: !Sub ${AWS::StackName}-KendraIndexId
