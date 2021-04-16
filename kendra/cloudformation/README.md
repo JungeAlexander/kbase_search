@@ -32,3 +32,24 @@ aws --profile kbasedev cloudformation create-stack --stack-name kendra-indexing-
 ```
 
 ## Creating Kendra Index
+
+```
+aws --profile kbasedev cloudformation validate-template --template-body file://index.yml
+aws --profile kbasedev cloudformation create-stack --stack-name kendra-index \
+    --template-body file://index.yml \
+    --parameters ParameterKey=KendraIndexRoleStack,ParameterValue=kendra-indexing-roles
+# aws --profile kbasedev cloudformation delete-stack --stack-name kendra-index
+```
+
+## Creating S3 source roles
+
+```
+aws --profile kbasedev cloudformation validate-template --template-body file://roles_data_source.yml
+aws --profile kbasedev cloudformation create-stack --stack-name kendra-data-source-roles \
+    --template-body file://roles_data_source.yml \
+    --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" \
+    --parameters ParameterKey=KendraIndexStack,ParameterValue=kendra-index ParameterKey=S3DataSource,ParameterValue=${KENDRA_SOURCE_S3_BUCKET} # get from .env file
+# aws --profile kbasedev cloudformation delete-stack --stack-name kendra-data-source-roles
+```
+
+## Creating Kendra Data Source
