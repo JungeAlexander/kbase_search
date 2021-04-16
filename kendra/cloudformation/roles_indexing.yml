@@ -78,9 +78,15 @@ Outputs:
   outputIndexingName:
     Description: KendraIndexing role name
     Value: !Ref KendraIndexingRole
+    Export:
+      Name: !Sub ${AWS::StackName}-KendraIndexingRoleName
   outputIndexingArn:
     Description: KendraIndexing role ARN
     Value: !GetAtt KendraIndexingRole.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-KendraIndexingRoleARN
   outputIndexingId:
     Description: KendraIndexing role ID
     Value: !GetAtt KendraIndexingRole.RoleId
+    Export:
+      Name: !Sub ${AWS::StackName}-KendraIndexingRoleId
