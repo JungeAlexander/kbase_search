@@ -53,3 +53,11 @@ aws --profile kbasedev cloudformation create-stack --stack-name kendra-data-sour
 ```
 
 ## Creating Kendra Data Source
+
+```
+aws --profile kbasedev cloudformation validate-template --template-body file://data_source.yml
+aws --profile kbasedev cloudformation create-stack --stack-name kendra-s3-data-source \
+    --template-body file://data_source.yml \
+    --parameters ParameterKey=KendraIndexStack,ParameterValue=kendra-index ParameterKey=KendraDataSourceRoleStack,ParameterValue=kendra-data-source-roles ParameterKey=S3DataSource,ParameterValue=${KENDRA_SOURCE_S3_BUCKET} # get from .env file
+# aws --profile kbasedev cloudformation delete-stack --stack-name kendra-s3-data-source
+```

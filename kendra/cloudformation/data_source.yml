@@ -9,6 +9,9 @@ Parameters:
   KendraDataSourceRoleStack:
     Type: "String"
     Description: "Stack creating Kendra data source role"
+  S3DataSource:
+    Type: "String"
+    Description: "S3 bucket serving as data source"
 
 Resources:
   KendraS3DataSource:
@@ -17,17 +20,7 @@ Resources:
     Properties:
       DataSourceConfiguration:
         S3Configuration:
-          AccessControlListConfiguration:
-            AccessControlListConfiguration
-          BucketName: String
-          DocumentsMetadataConfiguration:
-            DocumentsMetadataConfiguration
-          ExclusionPatterns:
-            DataSourceInclusionsExclusionsStrings
-          InclusionPatterns:
-            DataSourceInclusionsExclusionsStrings
-          InclusionPrefixes:
-            DataSourceInclusionsExclusionsStrings
+          BucketName: !Sub ${S3DataSource}
       Description: "S3 data source for PoC Kendra index"
       IndexId: !Sub ${KendraIndexStack}-KendraIndexARN
       Name: "kendra-poc-s3-data-source"
