@@ -22,7 +22,9 @@ Resources:
         S3Configuration:
           BucketName: !Sub ${S3DataSource}
       Description: "S3 data source for PoC Kendra index"
-      IndexId: !Sub ${KendraIndexStack}-KendraIndexARN
+      IndexId:
+        Fn::ImportValue:
+          !Sub ${KendraIndexStack}-KendraIndexId
       Name: "kendra-poc-s3-data-source"
       RoleArn:
         Fn::ImportValue:
