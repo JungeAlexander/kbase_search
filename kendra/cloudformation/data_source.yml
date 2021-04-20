@@ -24,7 +24,9 @@ Resources:
       Description: "S3 data source for PoC Kendra index"
       IndexId: !Sub ${KendraIndexStack}-KendraIndexARN
       Name: "kendra-poc-s3-data-source"
-      RoleArn: !Sub ${KendraDataSourceRoleStack}-KendraS3DataSourceRoleArn
+      RoleArn:
+        Fn::ImportValue:
+          !Sub ${KendraDataSourceRoleStack}-KendraS3DataSourceRoleArn
       Type: S3
       Tags:
       - Key: Purpose

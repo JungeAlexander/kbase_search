@@ -15,7 +15,9 @@ Resources:
       Description: "PoC Kendra index"
       Edition: "DEVELOPER_EDITION"
       Name: "kendra-poc"
-      RoleArn: !Sub ${KendraIndexRoleStack}-KendraIndexingRoleARN
+      RoleArn:
+        Fn::ImportValue:
+          !Sub ${KendraIndexRoleStack}-KendraIndexingRoleARN
       Tags:
       - Key: Purpose
         Value: kendra
