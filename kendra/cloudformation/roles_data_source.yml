@@ -51,16 +51,16 @@ Resources:
 Outputs:
   outputS3DataSourceName:
     Description: KendraS3DataSource role name
-    Value: !Ref KendraS3DataSource
+    Value: !Ref KendraS3DataSourceRole
     Export:
       Name: !Sub ${AWS::StackName}-KendraS3DataSourceRoleName
   outputS3DataSourceArn:
     Description: KendraS3DataSource role ARN
-    Value: !GetAtt KendraS3DataSource.Arn
+    Value: !GetAtt KendraS3DataSourceRole.Arn
     Export:
       Name: !Sub ${AWS::StackName}-KendraS3DataSourceRoleArn
   outputS3DataSourceId:
     Description: KendraS3DataSource role ID
-    Value: !GetAtt KendraS3DataSource.RoleId
+    Value: !GetAtt KendraS3DataSourceRole.RoleId
     Export:
       Name: !Sub ${AWS::StackName}-KendraS3DataSourceRoleId
