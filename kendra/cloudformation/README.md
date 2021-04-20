@@ -61,3 +61,12 @@ aws --profile kbasedev cloudformation create-stack --stack-name kendra-s3-data-s
     --parameters ParameterKey=KendraIndexStack,ParameterValue=kendra-index ParameterKey=KendraDataSourceRoleStack,ParameterValue=kendra-data-source-roles ParameterKey=S3DataSource,ParameterValue=${KENDRA_SOURCE_S3_BUCKET} # get from .env file
 # aws --profile kbasedev cloudformation delete-stack --stack-name kendra-s3-data-source
 ```
+
+## Syncing Data Source
+
+```
+index_id=$(aws --profile kbasedev cloudformation list-exports --output text --query "Exports[?Name=='kendra-index-KendraIndexId'].Value") && echo ${index_id}
+data_source_id=$(aws --profile kbasedev cloudformation list-exports --output text --query "Exports[?Name=='kendra-s3-data-source-KendraS3DataSourceId'].Value") && echo ${data_source_id}
+
+aws kendra start-data-source-sync-job --index-id ${index_id} --id ${data_source_id}
+```
