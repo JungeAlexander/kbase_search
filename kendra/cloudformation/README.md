@@ -1,5 +1,6 @@
+# Cloudformation templates to spin up kendra
 
-
+Execute the following in order and make sure to use the correct `--profile`.
 
 ## Setting up S3 source bucket
 
