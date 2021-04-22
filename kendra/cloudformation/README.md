@@ -18,6 +18,7 @@ aws cloudformation describe-change-set --change-set-name kendra-s3-source-cs-1 -
 aws --profile kbasedev cloudformation update-stack --stack-name kendra-s3-source \
     --template-body file://s3_source.yml \
     --parameters ParameterKey=MyBucketName,ParameterValue=${KENDRA_SOURCE_S3_BUCKET} # get from .env file
+# aws --profile kbasedev s3 rm s3://${KENDRA_SOURCE_S3_BUCKET} --recursive
 # aws --profile kbasedev cloudformation delete-stack --stack-name kendra-s3-source
 ```
 
